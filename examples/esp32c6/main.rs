@@ -101,7 +101,7 @@ impl<'spi> Tft<'spi> {
 #[main]
 fn main() -> ! {
     // esp-alloc 0.6.0 requires the allocator macro inside a function.
-    esp_alloc::heap_allocator!(72 * 1024);
+    esp_alloc::heap_allocator!(size: 72 * 1024);
 
     let config = esp_hal::Config::default().with_cpu_clock(CpuClock::max());
     let peripherals: Peripherals = esp_hal::init(config);
