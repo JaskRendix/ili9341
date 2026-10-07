@@ -11,6 +11,7 @@ This driver is designed for embedded Rust projects and aims to provide a simple,
 - SPI-based display communication
 - Support for ILI9341 and ILI9340C displays
 - Display orientation and rotation
+- Query current display orientation
 - Hardware scrolling
 - Pixel drawing
 - Rectangle fills
