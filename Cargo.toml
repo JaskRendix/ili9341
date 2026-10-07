@@ -34,9 +34,12 @@ stm32f4xx-hal = { version = "0.23", features = ["stm32f411"] }
 panic-halt = "1.0"
 
 [target.thumbv6m-none-eabi.dev-dependencies]
+cortex-m = "0.7.7"
+cortex-m-rt = "0.7.5"
 rp-pico = "0.9"
 defmt = "1"
 defmt-rtt = "1"
+panic-halt = "1.0"
 panic-semihosting = "0.7"
 
 [target.riscv32imac-unknown-none-elf.dev-dependencies]
