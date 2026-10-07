@@ -13,6 +13,7 @@ This driver is designed for embedded Rust projects and aims to provide a simple,
 - Display orientation and rotation
 - Hardware scrolling
 - Pixel drawing
+- Rectangle fills
 - [`embedded-graphics`] integration
 - Suitable for microcontrollers and embedded Linux platforms
 
@@ -80,24 +81,12 @@ Refer to the board examples and API documentation for complete initialization co
 
 ## Project Status
 
-### Currently supported
-
-- Drawing pixels
-- Display orientation
-- Hardware scrolling
-- `embedded-graphics` support
-
 ### Planned improvements
 
-- More display configuration options
 - Support for additional resolutions
-- Improved error handling
 - Display memory reads
 - DMA-friendly APIs
 - More board examples
-- More automated tests
-- Better documentation
-- Compatibility with newer embedded Rust ecosystem standards
 
 ## Relationship to the Original Project
 
