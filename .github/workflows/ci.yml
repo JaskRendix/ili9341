@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+          targets: |
+            thumbv7em-none-eabihf
+            thumbv6m-none-eabi
+            riscv32imac-unknown-none-elf
+
+      - name: Rust Cache
+        uses: swatinem/rust-cache@v2
+
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+      - name: Check RTIC example
+        run: cargo check --example rtic --target thumbv7em-none-eabihf --all-features
+
+      - name: Check RP2040 example
+        run: cargo check --example rppico --target thumbv6m-none-eabi
+
+      - name: Check ESP32-C6 example
+        run: cargo check --release --example esp32c6 --target riscv32imac-unknown-none-elf
+
+      - name: Clippy library
+        run: cargo clippy --lib --all-features -- -D warnings
+
+      - name: Run tests
+        run: cargo test --lib --all-features --verbose
