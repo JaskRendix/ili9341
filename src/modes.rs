@@ -33,6 +33,10 @@ pub trait Mode {
     fn mode(&self) -> u8;
 
     fn is_landscape(&self) -> bool;
+
+    fn orientation(&self) -> Option<Orientation> {
+        None
+    }
 }
 
 /// The default implementation of the Mode trait from above
@@ -56,10 +60,11 @@ impl Mode for Orientation {
     }
 
     fn is_landscape(&self) -> bool {
-        match self {
-            Self::Landscape | Self::LandscapeFlipped => true,
-            Self::Portrait | Self::PortraitFlipped => false,
-        }
+        matches!(self, Self::Landscape | Self::LandscapeFlipped)
+    }
+
+    fn orientation(&self) -> Option<Orientation> {
+        Some(*self)
     }
 }
 

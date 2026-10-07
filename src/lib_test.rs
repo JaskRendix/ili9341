@@ -513,3 +513,156 @@ fn test_brightness_boundaries() {
     assert!(display.brightness(128).is_ok());
     assert!(display.brightness(255).is_ok());
 }
+
+#[test]
+fn test_draw_raw_slice_rejects_too_few_pixels() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    // A 2 × 2 window requires 4 pixels.
+    assert!(display.draw_raw_slice(0, 0, 1, 1, &[0xFFFF]).is_err());
+}
+
+#[test]
+fn test_draw_raw_slice_rejects_too_many_pixels() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    // A 2 × 2 window requires exactly 4 pixels.
+    let pixels = [0xFFFF; 5];
+    assert!(display.draw_raw_slice(0, 0, 1, 1, &pixels).is_err());
+}
+
+#[test]
+fn test_fill_rect_accepts_valid_rectangle() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.fill_rect(10, 20, 3, 4, 0xF800).is_ok());
+}
+
+#[test]
+fn test_fill_rect_accepts_single_pixel() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.fill_rect(239, 319, 1, 1, 0xFFFF).is_ok());
+}
+
+#[test]
+fn test_fill_rect_rejects_zero_dimensions() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.fill_rect(0, 0, 0, 1, 0xFFFF).is_err());
+    assert!(display.fill_rect(0, 0, 1, 0, 0xFFFF).is_err());
+}
+
+#[test]
+fn test_fill_rect_rejects_out_of_bounds_rectangle() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    // The rectangle would extend past the right edge.
+    assert!(display.fill_rect(239, 0, 2, 1, 0xFFFF).is_err());
+
+    // The rectangle would extend past the bottom edge.
+    assert!(display.fill_rect(0, 319, 1, 2, 0xFFFF).is_err());
+}
+
+#[test]
+fn test_fill_rect_rejects_endpoint_overflow() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.fill_rect(u16::MAX, 0, 2, 1, 0xFFFF).is_err());
+    assert!(display.fill_rect(0, u16::MAX, 1, 2, 0xFFFF).is_err());
+}
+
+#[test]
+fn test_fill_rect_accepts_maximum_valid_rectangle() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.fill_rect(0, 0, 240, 320, 0xFFFF).is_ok());
+}

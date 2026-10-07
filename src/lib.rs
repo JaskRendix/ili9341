@@ -14,14 +14,14 @@
 //!
 //! let mut display = Ili9341::new(
 //!     iface,
-//!     reset_gpio,
+//!     reset\_gpio,
 //!     &mut delay,
 //!     Orientation::Landscape,
-//!     ili9341_driver::DisplaySize240x320,
+//!     ili9341\_driver::DisplaySize240x320,
 //! )
 //! .unwrap();
 //!
-//! display.clear_screen(Rgb565::RED).unwrap()
+//! display.clear\_screen(Rgb565::RED).unwrap()
 //! ```
 //!
 //! [display-interface-spi crate]: https://crates.io/crates/display-interface-spi
@@ -103,6 +103,7 @@ where
         // Do hardware reset by holding reset low for at least 10us
         ili9341.reset.set_low().map_err(|_| DisplayError::RSError)?;
         delay.delay_ms(1);
+
         // Set high for normal operation
         ili9341
             .reset
@@ -156,11 +157,25 @@ where
         self.interface.send_data(DataFormat::U16(data))
     }
 
-    fn set_window(&mut self, x0: u16, y0: u16, x1: u16, y1: u16) -> Result {
-        // Validate coordinates against current display dimensions and ensure x0 <= x1, y0 <= y1
+    /// Validates a drawing window and returns its pixel count.
+    ///
+    /// This method does not send commands to the display.
+    fn validate_window(&self, x0: u16, y0: u16, x1: u16, y1: u16) -> Result<usize> {
         if x0 > x1 || y0 > y1 || x1 >= self.width as u16 || y1 >= self.height as u16 {
             return Err(DisplayError::InvalidFormatError);
         }
+
+        let width = x1 as usize - x0 as usize + 1;
+        let height = y1 as usize - y0 as usize + 1;
+
+        width
+            .checked_mul(height)
+            .ok_or(DisplayError::InvalidFormatError)
+    }
+
+    fn set_window(&mut self, x0: u16, y0: u16, x1: u16, y1: u16) -> Result {
+        // Validate coordinates before issuing window commands.
+        self.validate_window(x0, y0, x1, y1)?;
 
         self.command(
             Command::ColumnAddressSet,
@@ -220,7 +235,7 @@ where
             scroller.height - scroller.fixed_top_lines - scroller.fixed_bottom_lines;
 
         if scroll_region_height > 0 {
-            // Normalize the scroll lines using modulo arithmetic over the scroll region
+            // Normalize the scroll lines using modulo arithmetic over the scroll region.
             let effective_lines = (num_lines % scroll_region_height) as u32;
             let current_relative = (scroller.top_offset - scroller.fixed_top_lines) as u32;
 
@@ -264,15 +279,45 @@ where
     /// The border is included.
     ///
     /// This method accepts a raw buffer of words that will be copied to the screen
-    /// video memory.
+    /// video memory. The buffer must contain exactly one pixel for every pixel
+    /// in the drawing window.
     ///
     /// The expected format is rgb565.
     pub fn draw_raw_slice(&mut self, x0: u16, y0: u16, x1: u16, y1: u16, data: &[u16]) -> Result {
+        // Validate the window and pixel count before sending any commands.
+        let expected_pixels = self.validate_window(x0, y0, x1, y1)?;
+
+        if data.len() != expected_pixels {
+            return Err(DisplayError::InvalidFormatError);
+        }
+
         self.set_window(x0, y0, x1, y1)?;
         self.write_slice(data)
     }
 
-    /// Change the orientation of the screen
+    /// Fill a rectangle with a single rgb565 color.
+    ///
+    /// `x` and `y` specify the top-left corner. `width` and `height` are
+    /// measured in pixels.
+    pub fn fill_rect(&mut self, x: u16, y: u16, width: u16, height: u16, color: u16) -> Result {
+        if width == 0 || height == 0 {
+            return Err(DisplayError::InvalidFormatError);
+        }
+
+        let x1 = x
+            .checked_add(width - 1)
+            .ok_or(DisplayError::InvalidFormatError)?;
+        let y1 = y
+            .checked_add(height - 1)
+            .ok_or(DisplayError::InvalidFormatError)?;
+
+        let pixel_count = self.validate_window(x, y, x1, y1)?;
+
+        self.set_window(x, y, x1, y1)?;
+        self.write_iter(core::iter::repeat_n(color, pixel_count))
+    }
+
+    /// Change the orientation of the screen.
     pub fn set_orientation<MODE>(&mut self, mode: MODE) -> Result
     where
         MODE: Mode,
@@ -282,20 +327,14 @@ where
         if self.landscape ^ mode.is_landscape() {
             core::mem::swap(&mut self.height, &mut self.width);
         }
+
         self.landscape = mode.is_landscape();
         Ok(())
     }
 
-    /// Fill entire screen with specified color u16 value
+    /// Fill the entire screen with the specified rgb565 color.
     pub fn clear_screen(&mut self, color: u16) -> Result {
-        let color_iter = core::iter::repeat_n(color, self.width * self.height);
-        self.draw_raw_iter(
-            0,
-            0,
-            (self.width - 1) as u16,
-            (self.height - 1) as u16,
-            color_iter,
-        )
+        self.fill_rect(0, 0, self.width as u16, self.height as u16, color)
     }
 
     fn set_state_cmd(&mut self, mode: ModeState, on: Command, off: Command) -> Result {
@@ -305,37 +344,37 @@ where
         }
     }
 
-    /// Control the screen sleep mode
+    /// Control the screen sleep mode.
     pub fn sleep_mode(&mut self, mode: ModeState) -> Result {
         self.set_state_cmd(mode, Command::SleepModeOn, Command::SleepModeOff)
     }
 
-    /// Control the screen display mode
+    /// Control the screen display mode.
     pub fn display_mode(&mut self, mode: ModeState) -> Result {
         self.set_state_cmd(mode, Command::DisplayOn, Command::DisplayOff)
     }
 
-    /// Invert the pixel color on screen
+    /// Invert the pixel color on screen.
     pub fn invert_mode(&mut self, mode: ModeState) -> Result {
         self.set_state_cmd(mode, Command::InvertOn, Command::InvertOff)
     }
 
-    /// Idle mode reduces the number of colors to 8
+    /// Idle mode reduces the number of colors to 8.
     pub fn idle_mode(&mut self, mode: ModeState) -> Result {
         self.set_state_cmd(mode, Command::IdleModeOn, Command::IdleModeOff)
     }
 
-    /// Set display brightness to the value between 0 and 255
+    /// Set display brightness to a value between 0 and 255.
     pub fn brightness(&mut self, brightness: u8) -> Result {
         self.command(Command::SetBrightness, &[brightness])
     }
 
-    /// Set adaptive brightness value equal to [AdaptiveBrightness]
+    /// Set adaptive brightness value equal to [AdaptiveBrightness].
     pub fn content_adaptive_brightness(&mut self, value: AdaptiveBrightness) -> Result {
         self.command(Command::ContentAdaptiveBrightness, &[value as _])
     }
 
-    /// Configure [FrameRateClockDivision] and [FrameRate] in normal mode
+    /// Configure [FrameRateClockDivision] and [FrameRate] in normal mode.
     pub fn normal_mode_frame_rate(
         &mut self,
         clk_div: FrameRateClockDivision,
@@ -347,7 +386,7 @@ where
         )
     }
 
-    /// Configure [FrameRateClockDivision] and [FrameRate] in idle mode
+    /// Configure [FrameRateClockDivision] and [FrameRate] in idle mode.
     pub fn idle_mode_frame_rate(
         &mut self,
         clk_div: FrameRateClockDivision,
@@ -358,12 +397,12 @@ where
 }
 
 impl<IFACE, RESET> Ili9341<IFACE, RESET> {
-    /// Get the current screen width. It can change based on the current orientation
+    /// Get the current screen width. It can change based on the current orientation.
     pub fn width(&self) -> usize {
         self.width
     }
 
-    /// Get the current screen height. It can change based on the current orientation
+    /// Get the current screen height. It can change based on the current orientation.
     pub fn height(&self) -> usize {
         self.height
     }
