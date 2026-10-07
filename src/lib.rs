@@ -73,6 +73,7 @@ pub struct Ili9341<IFACE, RESET> {
     width: usize,
     height: usize,
     landscape: bool,
+    orientation: Option<Orientation>,
 }
 
 impl<IFACE, RESET> Ili9341<IFACE, RESET>
@@ -98,6 +99,7 @@ where
             width: SIZE::WIDTH,
             height: SIZE::HEIGHT,
             landscape: false,
+            orientation: None,
         };
 
         // Do hardware reset by holding reset low for at least 10us
@@ -324,11 +326,15 @@ where
     {
         self.command(Command::MemoryAccessControl, &[mode.mode()])?;
 
-        if self.landscape ^ mode.is_landscape() {
+        let new_landscape = mode.is_landscape();
+
+        if self.landscape ^ new_landscape {
             core::mem::swap(&mut self.height, &mut self.width);
         }
 
-        self.landscape = mode.is_landscape();
+        self.landscape = new_landscape;
+        self.orientation = mode.orientation();
+
         Ok(())
     }
 
@@ -397,6 +403,14 @@ where
 }
 
 impl<IFACE, RESET> Ili9341<IFACE, RESET> {
+    /// Get the current display orientation, if known.
+    ///
+    /// Returns `None` when the current mode was configured using a custom
+    /// `Mode` implementation that does not map to a built-in `Orientation`.
+    pub fn orientation(&self) -> Option<Orientation> {
+        self.orientation
+    }
+
     /// Get the current screen width. It can change based on the current orientation.
     pub fn width(&self) -> usize {
         self.width

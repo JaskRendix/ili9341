@@ -49,6 +49,12 @@ pub enum Orientation {
     LandscapeFlipped,
 }
 
+impl Orientation {
+    pub(crate) fn is_landscape(self) -> bool {
+        matches!(self, Self::Landscape | Self::LandscapeFlipped)
+    }
+}
+
 impl Mode for Orientation {
     fn mode(&self) -> u8 {
         match self {
@@ -60,7 +66,7 @@ impl Mode for Orientation {
     }
 
     fn is_landscape(&self) -> bool {
-        matches!(self, Self::Landscape | Self::LandscapeFlipped)
+        (*self).is_landscape()
     }
 
     fn orientation(&self) -> Option<Orientation> {

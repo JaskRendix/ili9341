@@ -1,4 +1,4 @@
-use crate::{DisplaySize240x320, Ili9341, ModeState, Orientation};
+use crate::{DisplaySize240x320, Ili9341, Mode, ModeState, Orientation};
 use display_interface::{DataFormat, DisplayError, WriteOnlyDataCommand};
 use embedded_hal::digital::{ErrorType, OutputPin, PinState};
 
@@ -38,6 +38,18 @@ struct MockDelay;
 
 impl embedded_hal::delay::DelayNs for MockDelay {
     fn delay_ns(&mut self, _ns: u32) {}
+}
+
+struct CustomMode;
+
+impl Mode for CustomMode {
+    fn mode(&self) -> u8 {
+        0
+    }
+
+    fn is_landscape(&self) -> bool {
+        true
+    }
 }
 
 #[test]
@@ -665,4 +677,146 @@ fn test_fill_rect_accepts_maximum_valid_rectangle() {
     .unwrap();
 
     assert!(display.fill_rect(0, 0, 240, 320, 0xFFFF).is_ok());
+}
+
+#[test]
+fn test_orientation_reports_portrait() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert_eq!(display.orientation(), Some(Orientation::Portrait));
+}
+
+#[test]
+fn test_orientation_updates_after_change() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert_eq!(display.orientation(), Some(Orientation::Portrait));
+
+    display.set_orientation(Orientation::Landscape).unwrap();
+
+    assert_eq!(display.orientation(), Some(Orientation::Landscape));
+
+    display
+        .set_orientation(Orientation::PortraitFlipped)
+        .unwrap();
+
+    assert_eq!(display.orientation(), Some(Orientation::PortraitFlipped));
+}
+
+#[test]
+fn test_flipped_orientation_is_preserved() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    display
+        .set_orientation(Orientation::LandscapeFlipped)
+        .unwrap();
+
+    assert_eq!(display.orientation(), Some(Orientation::LandscapeFlipped));
+
+    display
+        .set_orientation(Orientation::PortraitFlipped)
+        .unwrap();
+
+    assert_eq!(display.orientation(), Some(Orientation::PortraitFlipped));
+}
+
+#[test]
+fn test_custom_mode_orientation_is_none() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    display.set_orientation(CustomMode).unwrap();
+
+    assert_eq!(display.orientation(), None);
+}
+
+#[test]
+fn test_orientation_reports_landscape() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Landscape,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert_eq!(display.orientation(), Some(Orientation::Landscape));
+}
+
+#[test]
+fn test_flipped_orientations_keep_correct_dimensions() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    display
+        .set_orientation(Orientation::LandscapeFlipped)
+        .unwrap();
+
+    assert_eq!(display.width(), 320);
+    assert_eq!(display.height(), 240);
+
+    display
+        .set_orientation(Orientation::PortraitFlipped)
+        .unwrap();
+
+    assert_eq!(display.width(), 240);
+    assert_eq!(display.height(), 320);
 }
