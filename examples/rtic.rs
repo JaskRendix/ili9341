@@ -96,7 +96,7 @@ mod app {
         let dummy_reset = DummyOutputPin::default();
         let mut delay = dp.TIM1.delay_us(&mut rcc);
 
-        let mut lcd = ili9341_driver::new(
+        let mut lcd = Ili9341::new(
             spi_interface,
             dummy_reset,
             &mut delay,
