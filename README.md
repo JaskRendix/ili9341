@@ -35,8 +35,16 @@ Board-specific examples are available in the [`examples`](examples) directory.
 
 Currently available examples include:
 
-- [ESP32-C6](examples/esp32c6/main.rs)
-- [Raspberry Pi Pico](examples/rppico/main.rs)
+- ESP32-C6
+  - `examples/esp32c6/main.rs`
+  - `examples/esp32c6/orientation.rs`
+
+- Raspberry Pi Pico
+  - `examples/rppico/main.rs`
+  - `examples/rppico/orientation.rs`
+
+- STM32F411 BlackPill (RTIC)
+  - `examples/rtic/main.rs`
 
 A typical display setup requires:
 
@@ -87,7 +95,7 @@ Refer to the board examples and API documentation for complete initialization co
 - Support for additional resolutions
 - Display memory reads
 - DMA-friendly APIs
-- More board examples
+- Additional board and feature demonstrations
 
 ## Relationship to the Original Project
 
@@ -100,32 +108,6 @@ Rust support, and ongoing maintenance.
 
 All original authors and contributors remain credited through the Git
 history and license files.
-
-## Contributing
-
-Contributions, issue reports, testing, and hardware feedback are welcome.
-
-Before opening a pull request, run:
-
-```bash
-cargo fmt
-cargo check
-cargo test
-cargo test --doc
-```
-
-If you are planning a larger API or architectural change, open an issue first so the approach can be discussed.
-
-Useful contributions include:
-
-- Testing with different display modules
-- Adding support for new boards
-- Improving examples
-- Writing documentation
-- Adding tests
-- Improving error messages
-- Updating `embedded-hal` compatibility
-- Reporting hardware-specific issues
 
 ## License
 

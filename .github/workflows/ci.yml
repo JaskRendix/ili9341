@@ -36,8 +36,14 @@ jobs:
       - name: Check RP2040 example
         run: cargo check --example rppico --target thumbv6m-none-eabi
 
+      - name: Check RP2040 orientation example
+        run: cargo check --example rppico_orientation --target thumbv6m-none-eabi
+
       - name: Check ESP32-C6 example
         run: cargo check --release --example esp32c6 --target riscv32imac-unknown-none-elf
+
+      - name: Check ESP32-C6 orientation example
+        run: cargo check --release --example esp32c6_orientation --target riscv32imac-unknown-none-elf
 
       - name: Clippy library
         run: cargo clippy --lib --all-features -- -D warnings

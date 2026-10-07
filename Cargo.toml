@@ -62,6 +62,16 @@ name = "rppico"
 path = "examples/rppico/main.rs"
 test = false
 
+[[example]]
+name = "rppico_orientation"
+path = "examples/rppico/orientation.rs"
+test = false
+
+[[example]]
+name = "esp32c6_orientation"
+path = "examples/esp32c6/orientation.rs"
+test = false
+
 [profile.dev]
 panic = "abort"
 
