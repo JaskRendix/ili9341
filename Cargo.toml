@@ -49,6 +49,7 @@ panic-halt = "1.0"
 
 [[example]]
 name = "rtic"
+path = "examples/rtic/main.rs"
 test = false
 
 [[example]]
