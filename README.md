@@ -123,3 +123,8 @@ You may choose either license.
 This project is derived from and builds upon the original [`yuri91/ili9341-rs`](https://github.com/yuri91/ili9341-rs) project.
 
 Many thanks to the original author and all previous contributors who helped establish the driver and its embedded Rust support.
+
+## Documentation
+
+* ILI9341 Datasheet (Adafruit/Ilitek): [https://cdn-shop.adafruit.com/datasheets/ILI9341.pdf](https://cdn-shop.adafruit.com/datasheets/ILI9341.pdf)
+* ILI9341 Controller Summary (Crystalfontz): [https://www.crystalfontz.com/controllers/Ilitek/ILI9341](https://www.crystalfontz.com/controllers/Ilitek/ILI9341)
