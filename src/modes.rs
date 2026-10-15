@@ -99,6 +99,15 @@ pub enum AdaptiveBrightness {
     MovingImage = 0x03,
 }
 
+/// Available gamma curves.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum GammaCurve {
+    Curve1 = 0x01,
+    Curve2 = 0x02,
+    Curve3 = 0x04,
+    Curve4 = 0x08,
+}
+
 /// Available frame rate in Hz
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FrameRate {

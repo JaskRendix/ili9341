@@ -9,6 +9,7 @@ pub enum Command {
     NormalDisplayModeOn = 0x13,
     InvertOff = 0x20,
     InvertOn = 0x21,
+    GammaSet = 0x26,
     DisplayOff = 0x28,
     DisplayOn = 0x29,
     ColumnAddressSet = 0x2a,

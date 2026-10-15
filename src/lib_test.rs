@@ -1,4 +1,4 @@
-use crate::{DisplaySize240x320, Ili9341, Mode, ModeState, Orientation};
+use crate::{DisplaySize240x320, GammaCurve, Ili9341, Mode, ModeState, Orientation};
 use display_interface::{DataFormat, DisplayError, WriteOnlyDataCommand};
 use embedded_hal::digital::{ErrorType, OutputPin, PinState};
 
@@ -951,4 +951,25 @@ fn test_partial_area_uses_current_display_height() {
 
     // Row 240 is out of bounds.
     assert!(display.partial_area(0, 240).is_err());
+}
+
+#[test]
+fn test_gamma_curve() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.gamma_curve(GammaCurve::Curve1).is_ok());
+    assert!(display.gamma_curve(GammaCurve::Curve2).is_ok());
+    assert!(display.gamma_curve(GammaCurve::Curve3).is_ok());
+    assert!(display.gamma_curve(GammaCurve::Curve4).is_ok());
 }

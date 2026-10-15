@@ -54,7 +54,7 @@ pub use display_interface::DisplayError;
 
 pub use modes::{
     AdaptiveBrightness, DisplaySize, DisplaySize240x320, DisplaySize320x480, FrameRate,
-    FrameRateClockDivision, Mode, ModeState, Orientation,
+    FrameRateClockDivision, GammaCurve, Mode, ModeState, Orientation,
 };
 pub use scroller::Scroller;
 
@@ -136,7 +136,7 @@ where
 
         ili9341.sleep_mode(ModeState::Off)?;
 
-        // Wait 5ms after Sleep Out before sending commands
+        // Wait after Sleep Out before sending commands.
         delay.delay_ms(POST_SLEEP_OUT_DELAY_MS);
 
         ili9341.display_mode(ModeState::On)?;
@@ -261,6 +261,11 @@ where
         Ok(Scroller::new(fixed_top_lines, fixed_bottom_lines, height))
     }
 
+    /// Scrolls the configured scroll region.
+    ///
+    /// Scrolling wraps around within the configured scroll area.
+    ///
+    /// Note: The ILI9341 ignores vertical scrolling while Partial Mode is active.
     pub fn scroll_vertically(&mut self, scroller: &mut Scroller, num_lines: u16) -> Result {
         let scroll_region_height =
             scroller.height - scroller.fixed_top_lines - scroller.fixed_bottom_lines;
@@ -424,6 +429,11 @@ where
             Command::NormalModeFrameRate,
             &[clk_div as _, frame_rate as _],
         )
+    }
+
+    /// Select the display gamma curve.
+    pub fn gamma_curve(&mut self, curve: GammaCurve) -> Result {
+        self.command(Command::GammaSet, &[curve as u8])
     }
 
     /// Configure [FrameRateClockDivision] and [FrameRate] in idle mode.
