@@ -16,11 +16,6 @@ impl DisplaySize for DisplaySize240x320 {
     const HEIGHT: usize = 320;
 }
 
-const MADCTL_MY: u8 = 0x80;
-const MADCTL_MX: u8 = 0x40;
-const MADCTL_MV: u8 = 0x20;
-const MADCTL_BGR: u8 = 0x08;
-
 /// Generic display size of 320x480 pixels
 pub struct DisplaySize320x480;
 
@@ -43,6 +38,12 @@ pub trait Mode {
         None
     }
 }
+
+// Memory Access Control (MADCTL, 36h) bit definitions
+const MADCTL_MY: u8 = 1 << 7;
+const MADCTL_MX: u8 = 1 << 6;
+const MADCTL_MV: u8 = 1 << 5;
+const MADCTL_BGR: u8 = 1 << 3;
 
 /// The default implementation of the Mode trait from above
 /// Should work for most (but not all) boards

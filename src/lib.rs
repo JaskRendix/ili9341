@@ -45,6 +45,7 @@ const POST_RESET_DELAY_MS: u32 = 5;
 const SOFTWARE_RESET_DELAY_MS: u32 = 120;
 const POST_SLEEP_OUT_DELAY_MS: u32 = 5;
 
+/// COLMOD (3Ah): DPI=101, DBI=101 (16-bit RGB565)
 const PIXEL_FORMAT_RGB565: u8 = 0x55;
 
 pub use embedded_hal::spi::MODE_0 as SPI_MODE;
