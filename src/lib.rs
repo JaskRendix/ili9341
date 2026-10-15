@@ -9,7 +9,6 @@
 //! * Interface for communicating with display ([display-interface-spi crate] for SPI)
 //! * Configuration (reset pin, delay, orientation and size) for display
 //!
-//! ```ignore
 //! let iface = SPIInterface::new(spi, dc, cs);
 //!
 //! let mut display = Ili9341::new(
@@ -22,7 +21,6 @@
 //! .unwrap();
 //!
 //! display.clear\_screen(Rgb565::RED).unwrap()
-//! ```
 //!
 //! [display-interface-spi crate]: https://crates.io/crates/display-interface-spi
 

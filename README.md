@@ -10,9 +10,18 @@ This driver is designed for embedded Rust projects and aims to provide a simple,
 - Platform-agnostic design
 - SPI-based display communication
 - Support for ILI9341 and ILI9340C displays
-- Display orientation and rotation
+- Display orientation control
 - Query current display orientation
-- Hardware scrolling
+- Hardware vertical scrolling
+- Partial display mode
+- Partial display area configuration
+- Gamma curve selection
+- Frame-rate configuration
+  - Normal mode
+  - Idle mode
+  - Partial mode
+- Display brightness control
+- Content Adaptive Brightness Control (CABC)
 - Pixel drawing
 - Rectangle fills
 - [`embedded-graphics`] integration
@@ -88,14 +97,24 @@ Rectangle::new(Point::new(0, 0), Size::new(100, 100))
 
 Refer to the board examples and API documentation for complete initialization code.
 
+## API Highlights
+
+- Display orientation control
+- Hardware vertical scrolling
+- Partial display mode
+- Gamma curve selection
+- Frame-rate configuration
+- Brightness and CABC control
+
 ## Project Status
 
 ### Planned improvements
 
 - Support for additional resolutions
 - Display memory reads
+- Tearing effect (TE) support
 - DMA-friendly APIs
-- Additional board and feature demonstrations
+- Additional board and feature examples
 
 ## Relationship to the Original Project
 
