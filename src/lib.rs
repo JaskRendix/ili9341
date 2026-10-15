@@ -229,6 +229,15 @@ where
     }
 
     /// Configures the screen for hardware-accelerated vertical scrolling.
+    ///
+    /// The scroll area is automatically configured so that:
+    ///
+    /// TFA + VSA + BFA == display height
+    ///
+    /// as required by the ILI9341 vertical scrolling hardware.
+    ///
+    /// `fixed_top_lines` and `fixed_bottom_lines` define the non-scrolling
+    /// regions at the top and bottom of the display.
     pub fn configure_vertical_scroll(
         &mut self,
         fixed_top_lines: u16,
@@ -385,6 +394,12 @@ where
     }
 
     /// Control the screen sleep mode.
+    ///
+    /// Entering sleep mode reduces power consumption while preserving
+    /// display memory contents.
+    ///
+    /// The framebuffer contents remain intact and become visible again
+    /// after leaving sleep mode.
     pub fn sleep_mode(&mut self, mode: ModeState) -> Result {
         self.set_state_cmd(mode, Command::SleepModeOn, Command::SleepModeOff)
     }

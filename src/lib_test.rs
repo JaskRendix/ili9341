@@ -998,3 +998,21 @@ fn test_partial_mode_frame_rate() {
             .is_ok()
     );
 }
+
+#[test]
+fn test_scroll_area_can_consume_entire_display() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.configure_vertical_scroll(0, 0).is_ok());
+}
