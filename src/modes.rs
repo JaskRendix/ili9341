@@ -16,6 +16,11 @@ impl DisplaySize for DisplaySize240x320 {
     const HEIGHT: usize = 320;
 }
 
+const MADCTL_MY: u8 = 0x80;
+const MADCTL_MX: u8 = 0x40;
+const MADCTL_MV: u8 = 0x20;
+const MADCTL_BGR: u8 = 0x08;
+
 /// Generic display size of 320x480 pixels
 pub struct DisplaySize320x480;
 
@@ -58,10 +63,13 @@ impl Orientation {
 impl Mode for Orientation {
     fn mode(&self) -> u8 {
         match self {
-            Self::Portrait => 0x40 | 0x08,
-            Self::Landscape => 0x20 | 0x08,
-            Self::PortraitFlipped => 0x80 | 0x08,
-            Self::LandscapeFlipped => 0x40 | 0x80 | 0x20 | 0x08,
+            Self::Portrait => MADCTL_MX | MADCTL_BGR,
+
+            Self::Landscape => MADCTL_MV | MADCTL_BGR,
+
+            Self::PortraitFlipped => MADCTL_MY | MADCTL_BGR,
+
+            Self::LandscapeFlipped => MADCTL_MX | MADCTL_MY | MADCTL_MV | MADCTL_BGR,
         }
     }
 

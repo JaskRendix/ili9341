@@ -40,6 +40,13 @@ use display_interface::WriteOnlyDataCommand;
 #[cfg(feature = "graphics")]
 mod graphics_core;
 
+const HW_RESET_DELAY_MS: u32 = 1;
+const POST_RESET_DELAY_MS: u32 = 5;
+const SOFTWARE_RESET_DELAY_MS: u32 = 120;
+const POST_SLEEP_OUT_DELAY_MS: u32 = 5;
+
+const PIXEL_FORMAT_RGB565: u8 = 0x55;
+
 pub use embedded_hal::spi::MODE_0 as SPI_MODE;
 
 pub use display_interface::DisplayError;
@@ -104,7 +111,7 @@ where
 
         // Do hardware reset by holding reset low for at least 10us
         ili9341.reset.set_low().map_err(|_| DisplayError::RSError)?;
-        delay.delay_ms(1);
+        delay.delay_ms(HW_RESET_DELAY_MS);
 
         // Set high for normal operation
         ili9341
@@ -112,26 +119,24 @@ where
             .set_high()
             .map_err(|_| DisplayError::RSError)?;
 
-        // Wait 5ms after reset before sending commands
-        // and 120ms before sending Sleep Out
-        delay.delay_ms(5);
+        // Wait after hardware reset before sending commands.
+        delay.delay_ms(POST_RESET_DELAY_MS);
 
-        // Do software reset
+        // Do software reset.
         ili9341.command(Command::SoftwareReset, &[])?;
 
-        // Wait 5ms after reset before sending commands
-        // and 120ms before sending Sleep Out
-        delay.delay_ms(120);
+        // Wait after software reset before Sleep Out.
+        delay.delay_ms(SOFTWARE_RESET_DELAY_MS);
 
         ili9341.set_orientation(mode)?;
 
         // Set pixel format to 16 bits per pixel
-        ili9341.command(Command::PixelFormatSet, &[0x55])?;
+        ili9341.command(Command::PixelFormatSet, &[PIXEL_FORMAT_RGB565])?;
 
         ili9341.sleep_mode(ModeState::Off)?;
 
         // Wait 5ms after Sleep Out before sending commands
-        delay.delay_ms(5);
+        delay.delay_ms(POST_SLEEP_OUT_DELAY_MS);
 
         ili9341.display_mode(ModeState::On)?;
 
