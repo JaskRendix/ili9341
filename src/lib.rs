@@ -59,7 +59,7 @@ pub use display_interface::DisplayError;
 
 pub use modes::{
     AdaptiveBrightness, DisplaySize, DisplaySize240x320, DisplaySize320x480, FrameRate,
-    FrameRateClockDivision, GammaCurve, Mode, ModeState, Orientation,
+    FrameRateClockDivision, GammaCurve, Mode, ModeState, Orientation, TearingEffectMode,
 };
 pub use scroller::Scroller;
 
@@ -482,6 +482,33 @@ where
         self.command(
             Command::PartialModeFrameRate,
             &[clk_div as _, frame_rate as _],
+        )
+    }
+
+    /// Control the tearing effect (TE) output signal.
+    ///
+    /// The TE output can be connected to the host MCU to synchronize
+    /// framebuffer updates with the display refresh cycle and reduce
+    /// visible tearing artifacts.
+    pub fn tearing_effect(&mut self, mode: ModeState, te_mode: TearingEffectMode) -> Result {
+        match mode {
+            ModeState::Off => self.command(Command::TearingEffectOff, &[]),
+            ModeState::On => self.command(Command::TearingEffectOn, &[te_mode as u8]),
+        }
+    }
+
+    /// Configure the scanline at which the TE output becomes active.
+    ///
+    /// A value of 0 is equivalent to enabling tearing effect output
+    /// in vertical blanking mode.
+    pub fn tear_scanline(&mut self, scanline: u16) -> Result {
+        if scanline >= self.height as u16 {
+            return Err(DisplayError::InvalidFormatError);
+        }
+
+        self.command(
+            Command::SetTearScanline,
+            &[(scanline >> 8) as u8, (scanline & 0xff) as u8],
         )
     }
 }

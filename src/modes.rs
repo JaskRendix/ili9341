@@ -137,3 +137,13 @@ pub enum FrameRateClockDivision {
     Div4 = 0x02,
     Div8 = 0x03,
 }
+
+/// Tearing effect output modes.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum TearingEffectMode {
+    /// TE pin signals vertical blanking only.
+    VerticalBlank = 0,
+
+    /// TE pin signals both vertical and horizontal blanking.
+    VerticalAndHorizontalBlank = 1,
+}

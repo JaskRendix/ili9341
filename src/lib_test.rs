@@ -1,6 +1,6 @@
 use crate::{
     DisplaySize240x320, FrameRate, FrameRateClockDivision, GammaCurve, Ili9341, Mode, ModeState,
-    Orientation,
+    Orientation, TearingEffectMode,
 };
 use display_interface::{DataFormat, DisplayError, WriteOnlyDataCommand};
 use embedded_hal::digital::{ErrorType, OutputPin, PinState};
@@ -1015,4 +1015,160 @@ fn test_scroll_area_can_consume_entire_display() {
     .unwrap();
 
     assert!(display.configure_vertical_scroll(0, 0).is_ok());
+}
+
+#[test]
+fn test_tearing_effect_vertical_blank() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(
+        display
+            .tearing_effect(ModeState::On, TearingEffectMode::VerticalBlank,)
+            .is_ok()
+    );
+}
+
+#[test]
+fn test_tearing_effect_vertical_and_horizontal_blank() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(
+        display
+            .tearing_effect(ModeState::On, TearingEffectMode::VerticalAndHorizontalBlank,)
+            .is_ok()
+    );
+}
+
+#[test]
+fn test_tearing_effect_off() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(
+        display
+            .tearing_effect(ModeState::Off, TearingEffectMode::VerticalBlank,)
+            .is_ok()
+    );
+}
+
+#[test]
+fn test_tear_scanline_zero() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.tear_scanline(0).is_ok());
+}
+
+#[test]
+fn test_tear_scanline_valid() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.tear_scanline(123).is_ok());
+}
+
+#[test]
+fn test_tear_scanline_maximum_valid() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.tear_scanline(319).is_ok());
+}
+
+#[test]
+fn test_tear_scanline_equal_height_is_rejected() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.tear_scanline(320).is_err());
+}
+
+#[test]
+fn test_tear_scanline_out_of_bounds_is_rejected() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.tear_scanline(500).is_err());
 }
