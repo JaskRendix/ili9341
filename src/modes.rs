@@ -99,7 +99,7 @@ pub enum AdaptiveBrightness {
     MovingImage = 0x03,
 }
 
-/// Available gamma curves
+/// Available gamma curves.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum GammaCurve {
     Curve1 = 0x01,
@@ -108,7 +108,7 @@ pub enum GammaCurve {
     Curve4 = 0x08,
 }
 
-/// Available frame rates supported by the ILI9341
+/// Available frame rates supported by the ILI9341.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FrameRate {
     Hz119 = 0x10,
@@ -129,7 +129,7 @@ pub enum FrameRate {
     Hz61 = 0x1f,
 }
 
-/// Frame rate clock division
+/// Internal oscillator division ratio used by frame rate control.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FrameRateClockDivision {
     Div1 = 0x00,

@@ -41,8 +41,15 @@ use display_interface::WriteOnlyDataCommand;
 mod graphics_core;
 
 const HW_RESET_DELAY_MS: u32 = 1;
+
+// Datasheet tRT minimum:
+// wait at least 5 ms after releasing RESX before sending commands.
 const POST_RESET_DELAY_MS: u32 = 5;
+
+/// Datasheet reset recovery time.
+/// Wait after Software Reset before issuing Sleep Out.
 const SOFTWARE_RESET_DELAY_MS: u32 = 120;
+
 const POST_SLEEP_OUT_DELAY_MS: u32 = 5;
 
 /// COLMOD (3Ah): DPI=101, DBI=101 (16-bit RGB565)
@@ -89,6 +96,10 @@ where
     IFACE: WriteOnlyDataCommand,
     RESET: OutputPin,
 {
+    /// Initializes the display.
+    ///
+    /// A hardware reset is performed during initialization to ensure the
+    /// controller starts from a known state.
     pub fn new<DELAY, SIZE, MODE>(
         interface: IFACE,
         reset: RESET,
