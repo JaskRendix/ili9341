@@ -15,6 +15,8 @@ This driver is designed for embedded Rust projects and aims to provide a simple,
 - Hardware vertical scrolling
 - Partial display mode
 - Partial display area configuration
+- Tearing effect (TE) support
+- Configurable TE scanline generation
 - Gamma curve selection
 - Frame-rate configuration
   - Normal mode
@@ -105,6 +107,7 @@ Refer to the board examples and API documentation for complete initialization co
 - Gamma curve selection
 - Frame-rate configuration
 - Brightness and CABC control
+- Tearing effect (TE) control
 
 ## Project Status
 
@@ -112,7 +115,6 @@ Refer to the board examples and API documentation for complete initialization co
 
 - Support for additional resolutions
 - Display memory reads
-- Tearing effect (TE) support
 - DMA-friendly APIs
 - Additional board and feature examples
 
