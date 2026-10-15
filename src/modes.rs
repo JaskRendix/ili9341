@@ -99,7 +99,7 @@ pub enum AdaptiveBrightness {
     MovingImage = 0x03,
 }
 
-/// Available gamma curves.
+/// Available gamma curves
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum GammaCurve {
     Curve1 = 0x01,
@@ -108,32 +108,32 @@ pub enum GammaCurve {
     Curve4 = 0x08,
 }
 
-/// Available frame rate in Hz
+/// Available frame rates supported by the ILI9341
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FrameRate {
-    FrameRate119 = 0x10,
-    FrameRate112 = 0x11,
-    FrameRate106 = 0x12,
-    FrameRate100 = 0x13,
-    FrameRate95 = 0x14,
-    FrameRate90 = 0x15,
-    FrameRate86 = 0x16,
-    FrameRate83 = 0x17,
-    FrameRate79 = 0x18,
-    FrameRate76 = 0x19,
-    FrameRate73 = 0x1a,
-    FrameRate70 = 0x1b,
-    FrameRate68 = 0x1c,
-    FrameRate65 = 0x1d,
-    FrameRate63 = 0x1e,
-    FrameRate61 = 0x1f,
+    Hz119 = 0x10,
+    Hz112 = 0x11,
+    Hz106 = 0x12,
+    Hz100 = 0x13,
+    Hz95 = 0x14,
+    Hz90 = 0x15,
+    Hz86 = 0x16,
+    Hz83 = 0x17,
+    Hz79 = 0x18,
+    Hz76 = 0x19,
+    Hz73 = 0x1a,
+    Hz70 = 0x1b,
+    Hz68 = 0x1c,
+    Hz65 = 0x1d,
+    Hz63 = 0x1e,
+    Hz61 = 0x1f,
 }
 
 /// Frame rate clock division
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum FrameRateClockDivision {
-    Fosc = 0x00,
-    FoscDiv2 = 0x01,
-    FoscDiv4 = 0x02,
-    FoscDiv8 = 0x03,
+    Div1 = 0x00,
+    Div2 = 0x01,
+    Div4 = 0x02,
+    Div8 = 0x03,
 }

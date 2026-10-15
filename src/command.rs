@@ -27,4 +27,5 @@ pub enum Command {
     ContentAdaptiveBrightness = 0x55,
     NormalModeFrameRate = 0xb1,
     IdleModeFrameRate = 0xb2,
+    PartialModeFrameRate = 0xb3,
 }

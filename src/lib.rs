@@ -404,7 +404,11 @@ where
         self.set_state_cmd(mode, Command::InvertOn, Command::InvertOff)
     }
 
-    /// Idle mode reduces the number of colors to 8.
+    /// Enable or disable idle mode.
+    ///
+    /// In idle mode, the display reduces color depth and shows only
+    /// eight colors derived from the most significant bit of each RGB
+    /// component.
     pub fn idle_mode(&mut self, mode: ModeState) -> Result {
         self.set_state_cmd(mode, Command::IdleModeOn, Command::IdleModeOff)
     }
@@ -443,6 +447,18 @@ where
         frame_rate: FrameRate,
     ) -> Result {
         self.command(Command::IdleModeFrameRate, &[clk_div as _, frame_rate as _])
+    }
+
+    /// Configure [FrameRateClockDivision] and [FrameRate] in partial mode.
+    pub fn partial_mode_frame_rate(
+        &mut self,
+        clk_div: FrameRateClockDivision,
+        frame_rate: FrameRate,
+    ) -> Result {
+        self.command(
+            Command::PartialModeFrameRate,
+            &[clk_div as _, frame_rate as _],
+        )
     }
 }
 
