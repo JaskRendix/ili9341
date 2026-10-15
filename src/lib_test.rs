@@ -820,3 +820,135 @@ fn test_flipped_orientations_keep_correct_dimensions() {
     assert_eq!(display.width(), 240);
     assert_eq!(display.height(), 320);
 }
+
+#[test]
+fn test_partial_area_accepts_valid_rows() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.partial_area(10, 100).is_ok());
+}
+
+#[test]
+fn test_partial_area_accepts_full_screen() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.partial_area(0, 319).is_ok());
+}
+
+#[test]
+fn test_partial_area_accepts_single_row() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.partial_area(42, 42).is_ok());
+}
+
+#[test]
+fn test_partial_area_accepts_wrapping_region() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.partial_area(300, 50).is_ok());
+}
+
+#[test]
+fn test_partial_area_rejects_out_of_bounds_rows() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.partial_area(320, 319).is_err());
+    assert!(display.partial_area(0, 320).is_err());
+}
+
+#[test]
+fn test_partial_mode() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Portrait,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    assert!(display.partial_mode(ModeState::On).is_ok());
+    assert!(display.partial_mode(ModeState::Off).is_ok());
+}
+
+#[test]
+fn test_partial_area_uses_current_display_height() {
+    let iface = MockInterface;
+    let reset = MockPin;
+    let mut delay = MockDelay;
+
+    let mut display = Ili9341::new(
+        iface,
+        reset,
+        &mut delay,
+        Orientation::Landscape,
+        DisplaySize240x320,
+    )
+    .unwrap();
+
+    // Landscape height is 240.
+    assert!(display.partial_area(0, 239).is_ok());
+
+    // Row 240 is out of bounds.
+    assert!(display.partial_area(0, 240).is_err());
+}

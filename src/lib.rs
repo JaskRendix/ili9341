@@ -205,6 +205,29 @@ where
         )
     }
 
+    /// Configure the display rows used in partial mode.
+    ///
+    /// The display must be put into partial mode with
+    /// [`Ili9341::partial_mode`] for this setting to take effect.
+    ///
+    /// `start_row` and `end_row` define the visible rows while partial mode
+    /// is enabled.
+    pub fn partial_area(&mut self, start_row: u16, end_row: u16) -> Result {
+        if start_row >= self.height as u16 || end_row >= self.height as u16 {
+            return Err(DisplayError::InvalidFormatError);
+        }
+
+        self.command(
+            Command::PartialArea,
+            &[
+                (start_row >> 8) as u8,
+                (start_row & 0xff) as u8,
+                (end_row >> 8) as u8,
+                (end_row & 0xff) as u8,
+            ],
+        )
+    }
+
     /// Configures the screen for hardware-accelerated vertical scrolling.
     pub fn configure_vertical_scroll(
         &mut self,
@@ -364,6 +387,11 @@ where
     /// Control the screen display mode.
     pub fn display_mode(&mut self, mode: ModeState) -> Result {
         self.set_state_cmd(mode, Command::DisplayOn, Command::DisplayOff)
+    }
+
+    /// Control partial display mode.
+    pub fn partial_mode(&mut self, mode: ModeState) -> Result {
+        self.set_state_cmd(mode, Command::PartialModeOn, Command::NormalDisplayModeOn)
     }
 
     /// Invert the pixel color on screen.
